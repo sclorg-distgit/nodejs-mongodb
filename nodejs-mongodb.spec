@@ -1,0 +1,70 @@
+%{?scl:%scl_package nodejs-%{npm_name}}
+%{!?scl:%global pkg_name %{name}}
+
+%global npm_name mongodb
+
+%{?nodejs_find_provides_and_requires}
+
+Summary:       A node driver for MongoDB
+Name:          %{?scl_prefix}nodejs-%{npm_name}
+Version:       1.3.19
+Release:       3.2%{?dist}
+Group:         Development/Languages
+License:       ASL 2.0
+URL:           https://github.com/mongodb/node-mongodb-native
+Source0:       http://registry.npmjs.org/%{npm_name}/-/%{npm_name}-%{version}.tgz
+BuildRequires: %{?scl_prefix}nodejs-devel
+BuildArch:     noarch
+
+%description
+The MongoDB Node.js driver is the officially supported node.js driver for MongoDB.
+In Spring 2012, MongoDB officially adopted the popular Node MongoDB Native Project.
+
+%prep
+%setup -q -n package
+%nodejs_fixdep bson '>=0.2.2'
+%build
+#nothing to do
+
+%install
+mkdir -p %{buildroot}%{nodejs_sitelib}/%{npm_name}
+cp -pr index.js lib package.json t.js %{buildroot}%{nodejs_sitelib}/%{npm_name}
+
+#Cleanup permissions
+chmod 644 %{buildroot}%{nodejs_sitelib}/%{npm_name}/*.js
+chmod 644 %{buildroot}%{nodejs_sitelib}/%{npm_name}/*.json
+
+%nodejs_symlink_deps
+%files
+%doc CONTRIBUTING.md LICENSE Readme.md
+%{nodejs_sitelib}/%{npm_name}
+
+%changelog
+* Tue Mar 04 2014 Tomas Hrcka <thrcka@redhat.com> - 1.3.19-3.2
+- Add missing nodejs_symlink_deps macro
+
+* Mon Feb 17 2014 Tomas Hrcka <thrcka@redhat.com> - 1.3.19-3.1
+- Change description
+
+* Wed Jan 29 2014 Tomas Hrcka <thrcka@redhat.com> - 1.3.19-2.1
+- fix bson dependency
+
+* Mon Dec 16 2013 Tomas Hrcka <thrcka@redhat.com> - 1.3.19-1.1
+- Enable scl support
+- Invoke provides requires macro
+
+* Thu Oct 03 2013 Troy Dawson <tdawson@redhat.com> - 1.3.19-1
+- Updated to version 1.3.19
+
+* Fri Aug 09 2013 Troy Dawson <tdawson@redhat.com> - 1.3.17-1
+- Updated to version 1.3.17
+- Package using the new Fedora guidelines
+
+* Wed Jul 24 2013 Troy Dawson <tdawson@redhat.com> - 1.3.12-1
+- Updated to version 1.3.12
+
+* Wed Apr 17 2013 Haibo Lin <hlin@redhat.com> - 1.2.14-1
+- Build under eng-rhel-6 and update to upstream version 1.2.14
+
+* Thu Feb 16 2012 Troy Dawson <tdawson@redhat.com> - 0.9.9.1-1
+- Initial build
